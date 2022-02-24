@@ -4,14 +4,14 @@
 
 #!/usr/bin/python
 
-from logging.config import stopListening
-from tkinter import *
 import json
 import requests
 import argparse
+import pprint
 
 api = 'https://api-v3.mbta.com/'
 parser = argparse.ArgumentParser(description='Process cmd line args')
+printer = pprint.PrettyPrinter(indent=4)
 global DEBUG 
 DEBUG = False
 
@@ -69,7 +69,8 @@ Output stops with two or more routes intersecting at stop.
 '''
 def q2():
     print("\n########Question 2########\n")
-    global stops 
+    global stopsByRoute
+    global stopsByName 
     stopsByRoute = {}
     stopsByName = {}
     for route in route_Names:
@@ -78,6 +79,7 @@ def q2():
         response = requests.get(api_w_params,headers=headers)
         formatted_response = json.dumps(response.json(),  indent=4)
         serializedStops = json.loads(formatted_response)
+
         if DEBUG:
             print(formatted_response)
         stopsByRoute[route] = []
@@ -87,7 +89,7 @@ def q2():
             if not stopsByName.get(name):
                 stopsByName[name] = []
             stopsByName[name].append(route)
-
+    printer.pprint(stopsByRoute)
     sortedByRoute = sorted(stopsByRoute, key=lambda route: len(stopsByRoute[route]), reverse=False)
     leastIndex = 0
     leastStops = len(stopsByRoute[sortedByRoute[leastIndex]])
@@ -112,7 +114,36 @@ def q2():
 Take user input for any two stops from routes in q1, output route connecting two stops
 '''
 def q3():
-    print("########Question 3########")
+    print("\n########Question 3########\n")
+    print("Choose two stops to find a connecting path")
+    stop1 = input("Choose your starting stop: ")
+    stop2 = input("Choose your destination stop: ")
+    lines1 = stopsByName[stop1]
+    lines2 = stopsByName[stop2]
+    #Check if they are on the same line. Simplest solution is to stay on the same line
+    #Else find earliest connecting stop between two lines(including via another line)
+    intersection = list(set(lines1) & set(lines2))
+    if intersection:
+        ##If intersection size > 1 (ex. overlapping of Green Lines), we can take any of the routes between the two stops. Choose first for simplicity
+        print(stop1 + " to " + stop2 + ": " + routeDict[intersection[0]])
+    else:
+        search1 = []
+        search2 = []
+        stop1Index = stopsByRoute[lines1[0]].index(stop1)
+        stop2Index = stopsByRoute[lines2[0]].index(stop2)
+        if stop1Index > 0 :
+            search1.append(stopsByRoute[lines1[0][stop1Index - 1]])
+        if stop1Index < len(stopsByRoute[lines1[0]]):
+            search1.append(stopsByRoute[lines1[0][stop1Index + 1]])
+        if stop2Index > 0 :
+            search2.append(stopsByRoute[lines2[0][stop1Index - 1]])
+        if stop1Index < len(stopsByRoute[lines2[0]]):
+            search2.append(stopsByRoute[lines2[0][stop1Index + 1]])
+
+        while not intersection:
+            
+            print(line1+ "" + line2)
+
 
 def main():
     parser.add_argument('-k', '--APIkey', type=str, default='698781b4164542dfaf716672b22a1f02', help='Key to connect to the MBTA API')
