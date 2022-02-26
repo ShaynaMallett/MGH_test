@@ -8,9 +8,9 @@ python3 solution.py
 ```
 
 Option Tag | Description
------------------------ | -----------------------------
--u,--Use_key |Enable global boolean to use a key to connect to the API. [True, False] Default: False
--k, --APIkey |Key to connect to the MBTA API. -u True must be included in command. example key: 798981a4164542dfaf716772b22a1f02')
+:-:        | ---
+-u,--Use_key | Enable global boolean to use a key to connect to the API. [True, False] Default: False
+-k, --APIkey | Key to connect to the MBTA API. -u True must be included in command. example key: 798981a4164542dfaf716772b22a1f02
 -t, --Test |Run test script for solution program, runs default program that allows input otherwise [True, False] Default: False
 -d, --Debug |Run script with debugging data [True, False] Default: False
    
